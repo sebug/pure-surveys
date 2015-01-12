@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pure Surveys example</title>
+<script src="js/r.js"></script>
+</head>
+<body>
+
+<script>
+requirejs({
+  baseUrl: 'require-output',
+  paths: {
+    "Debug.Trace": 'Debug.Trace/index',
+    "Prelude": 'Prelude/index'
+  }
+});
+require(["Main/index"], function (Main) {
+  Main.main();
+});
+</script>
+</body>
+</html>
