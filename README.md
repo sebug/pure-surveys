@@ -8,6 +8,7 @@ It uses [pulp](https://github.com/bodil/pulp) to get started and then require.js
 
 To build (requires [r.js](http://requirejs.org/docs/download.html)):
 
+	bower update
     pulp build
     mkdir -p require-output
     node r.js -convert output require-output

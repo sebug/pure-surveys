@@ -6,16 +6,59 @@
 </head>
 <body>
 
+<div data-bind="foreach: surveys">
+<h2 data-bind="text: title"></h2>
+<!-- ko foreach: questions -->
+<p><span data-bind="text: prompt"></span> <input data-bind="value: answer" /></p>
+<!-- /ko -->
+</div>
+
+<p><input type="button" data-bind="click: submitAnswers" value="Submit Answers" /></p>
+
+<p data-bind="text: logOutput"></p>
+
 <script>
 requirejs({
   baseUrl: 'require-output',
   paths: {
-    "Debug.Trace": 'Debug.Trace/index',
-    "Prelude": 'Prelude/index'
+    'Debug.Trace': 'Debug.Trace/index',
+    'Data.Array': 'Data.Array/index',
+    'Data.Maybe': 'Data.Maybe/index',
+    Prelude: 'Prelude/index',
+    'Prelude.Unsafe': 'Prelude.Unsafe/index',
+    'Control.Alt': 'Control.Alt/index',
+    'Control.Plus': 'Control.Plus/index',
+    'Control.Alternative': 'Control.Alternative/index',
+    'Control.MonadPlus': 'Control.MonadPlus/index',
+    'Control.Extend': 'Control.Extend/index',
+    'Control.Lazy': 'Control.Lazy/index',
+    knockout: '../js/knockout-3.2.0'
   }
 });
-require(["Main/index"], function (Main) {
-  Main.main();
+require(["Main/index", "knockout"], function (Main, ko) {
+  'use strict';
+  var makeAnswersObservable = function (questionnaires) {
+    var i, j, question;
+    for (i = 0; i < questionnaires.length; i += 1) {
+        for(j = 0; j < questionnaires[i].questions.length; j += 1) {
+            question = questionnaires[i].questions[j];
+            if (typeof question.answer !== 'function') {
+                question.answer = ko.observable(question.answer);
+            }
+        }
+    }
+    return questionnaires;
+  },
+  surveyViewModel = {
+    surveys: makeAnswersObservable(Main.sampleQuestionnaires),
+    logOutput: ko.observable(''),
+    submitAnswers: function () {
+        var jsified = ko.toJS(this.surveys),
+            extractedAnswers = Main.extractAnswers(jsified)
+        this.logOutput(JSON.stringify(extractedAnswers));
+    }
+  };
+  ko.applyBindings(surveyViewModel);
 });
 </script>
 </body>
